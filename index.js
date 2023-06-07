@@ -34,7 +34,7 @@ const addDepartment = () => {
                 res.status(400).json('There was an issue finding the departments in the database.');
                 return;
             } else {
-                return result;
+                console.log(result);
             }  
         })
     })
@@ -95,7 +95,7 @@ const addRole = () => {
                         res.status(400).json('There was an issue creating the role in the database.');
                         return;
                     } else {
-                        return result;
+                        console.log(result);
                     }
                 })             
             } 
@@ -165,11 +165,9 @@ const init = () => {
                 }
             });
         } else if (userRequest === 'Add a department'){
-            const result = addDepartment();
-            console.log(result);
+            addDepartment();
         } else if (userRequest === 'Add a role'){
-            const result = addRole();
-            console.log(result);
+            addRole();
         } else if (userRequest === 'Add an employee'){
             //prompt: enter the employee’s first name, last name, role, and manager, 
             //and that employee is added to the database
