@@ -28,7 +28,8 @@ const addDepartment = () => {
      //then add to database
     .then(({newDepartmentName}) => {
         const query = 'INSERT INTO department (name) VALUES (?)'
-        db.query(query, newDepartmentName, (err, result) => {
+        db.promise().query(query, newDepartmentName)
+        .then((err, result) => {
             if(err) {
                 res.status(400).json('There was an issue finding the departments in the database.');
                 return;
@@ -46,16 +47,17 @@ const addRole = () => {
     //define function to get department list names
     const findDepartmentNames = () => {
         const query = 
-        'SELECT department.name AS Department Name FROM department';
-        db.query(query, (err, result) => {
+        'SELECT department.name AS Department Name FROM department;';
+        db.promise().query({sql: query, rowsAsArray: true})
+        .then((err, result) => {
             if(err) {
                 res.status(400).json('There was an issue finding the departments in the database.');
                 return;
             } else {
-                return arrayFrom(result);
+                return (result);
             }
         })
-    };
+    }
     //prompt: name, salary, department
     inquirer
     .prompt([
@@ -79,24 +81,25 @@ const addRole = () => {
     //then add role to database
     .then(({newRole, roleSalary, selectedDepartment}) => {
         //right now I'm putting in the department name not the id!
-        const queryFindDepartmentId = "SELECT department.id FROM role JOIN department ON role.department_id = department.id WHERE department.name = ?"
-        db.query(queryFindDepartmentId, selectedDepartment, (err, id) => {
+        const queryFindDepartmentId = "SELECT department.id FROM role JOIN department ON role.department_id = department.id WHERE department.name = ?;"
+        db.promise().query(queryFindDepartmentId, selectedDepartment)
+        .then((err, id) => {
             if(err) {
                 res.status(400).json('There was an issue finding the department id in the database.');
                 return;
             } else {
-                const query = 'INSERT INTO role (name, salary, department_id) VALUES (?)'
-                db.query(query, [newRole, roleSalary, id], (err, result) => {
+                const query = 'INSERT INTO role (name, salary, department_id) VALUES (?);'
+                db.promise().query(query, [newRole, roleSalary, id])
+                .then((err, result) => {
                     if(err) {
                         res.status(400).json('There was an issue creating the role in the database.');
                         return;
                     } else {
                         return result;
-                    }  
-                })            
-            }
+                    }
+                })             
+            } 
         })
-        
     })
     .catch((err) => {
         console.log('There was an error processing the request.');
@@ -124,8 +127,9 @@ const init = () => {
         if(userRequest === 'View all departments'){
             //view all departments: department names and department ids
             const query = 
-            'SELECT department.id AS Department ID, department.name AS Department Name FROM department';
-            db.query(query, (err, result) => {
+            'SELECT department.id AS Department ID, department.name AS Department Name FROM department;';
+            db.promise().query(query)
+            .then((err, result) => {
                 if(err) {
                     res.status(400).json('There was an issue finding the departments in the database.');
                     return;
@@ -136,8 +140,9 @@ const init = () => {
         } else if (userRequest === 'View all roles'){
             //job title, role id, department the role belongs to, and salary for the role
             const query = 
-            'SELECT role.title AS Job Title, department.name AS Department Name, role.salary AS Role Salary FROM role JOIN department ON department.id = role.department_id';
-            db.query(query, (err, result) => {
+            'SELECT role.title AS Job Title, department.name AS Department Name, role.salary AS Role Salary FROM role JOIN department ON department.id = role.department_id;';
+            db.promise().query(query)
+            .then((err, result) => {
                 if(err) {
                     res.status(400).json('There was an issue finding the roles in the database.');
                     return;
@@ -149,8 +154,9 @@ const init = () => {
             //employee data, including employee ids, first names, last names, job titles, 
             //departments, salaries, and managers that the employees report to
             const query = 
-            'Select employee.id AS Employee ID, employee.first_name AS Employee First Name, employee.last_name AS Employee Last Name, role.title AS Employee Job Title, department.name AS Employee Department, role.salary AS Employee Salary, employee.manager_id AS Employee Manager FROM employee JOIN role ON role.id = employee.manager_id JOIN department ON department.id = role.department_id';
-            db.query(query, (err, result) => {
+            'Select employee.id AS Employee ID, employee.first_name AS Employee First Name, employee.last_name AS Employee Last Name, role.title AS Employee Job Title, department.name AS Employee Department, role.salary AS Employee Salary, employee.manager_id AS Employee Manager FROM employee JOIN role ON role.id = employee.manager_id JOIN department ON department.id = role.department_id;';
+            db.promise().query(query)
+            .then((err, result) => {
                 if(err) {
                     res.status(400).json('There was an issue finding the employees in the database.');
                     return;
@@ -175,7 +181,7 @@ const init = () => {
         }
     })
     .catch((err) => {
-        console.log('There was an error processing the request.')
+        console.log('There was an error processing the request.', err)
     })
 }
 
