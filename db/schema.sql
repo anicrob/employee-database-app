@@ -1,0 +1,35 @@
+-- deleting the employees database if it exists--
+DROP DATABASE IF EXISTS employeeshw_db;
+-- create the employees database --
+CREATE DATABASE employeeshw_db;
+
+
+--use the employees database--
+USE employeeshw_db;
+
+
+--create a table called department in the database--
+CREATE TABLE department (
+ id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(30)
+);
+
+--create a table called role in the database--
+CREATE TABLE role (
+ id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ title VARCHAR(30),
+ salary DECIMAL(13,2),
+ department_id INT,
+ FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
+);
+
+--create a table called employee in the database--
+CREATE TABLE employee (
+ id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ first_name VARCHAR(30),
+ last_name VARCHAR(30),
+ role_id INT,
+  --HOW TO REFERENCE FOR MANAGER?
+ manager_id INT REFERENCES employee(id) ON DELETE SET NULL,
+ FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
+);
