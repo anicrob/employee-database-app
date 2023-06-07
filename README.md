@@ -21,7 +21,7 @@ npm i
 
 ## Usage
 
-Please be sure to run source schema.sql and source seeds.sql to be able to use the app first. 
+Please be sure to run source schema.sql and source seeds.sql within the MYSQL shell to be able to use the app first. 
 
 
 
