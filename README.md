@@ -8,9 +8,7 @@ This app uses inquirer to ask you a few prompts to retrieve some database inform
 ## Table of Contents
 * [Installation](#installation)
 * [Usage](#usage)
-* [Contributing](#contributing)
-* [Tests](#tests)
-* [Questions](#questions)
+* [Contributing](#contribution)
 
 ## Installation
 
@@ -23,7 +21,10 @@ npm i
 
 Please be sure to run source schema.sql and source seeds.sql within the MYSQL shell to be able to use the app first. 
 
-
+Also run this command to start the app:
+~~~
+node index.js
+~~~
 
 ## Contribution
 
