@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
-const dbConnection = require('./db/sql');
-
+const Query = require('./sqlClass')
 
 const addDepartment = () => {
     //prompt: name of the department

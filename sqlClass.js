@@ -1,3 +1,4 @@
+const db = require('./db/sql')
 class Query {
     getDepartments() {
         const query = 
@@ -33,6 +34,5 @@ class Query {
         const query = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?)'
                 db.promise().query(query, [firstName, lastName, roleId, managerId])
     }
-
-
 }
+module.exports = Query
