@@ -6,13 +6,12 @@ const addDepartment = () => {
     //prompt: name of the department
     inquirer
     .prompt(
-        [
             {
                 type: 'input',
                 name: 'newDepartment',
                 message: 'What would you like the new department to be called?',
             }
-        ])
+        )
      //then add to database
     .then(({newDepartmentName}) => {
        const createDepartment = new Query;
@@ -30,7 +29,6 @@ const addDepartment = () => {
         console.log('There was an error processing the request.');
     });
 }
-
 const addRole = () => {
     inquirer
     .prompt([
