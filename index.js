@@ -191,8 +191,6 @@ const init = () => {
                 }            
             });
         } else if (userRequest === 'View all employees'){
-            //employee data, including employee ids, first names, last names, job titles, 
-            //departments, salaries, and managers that the employees report to
             const findEmployees = new Query();
             findEmployees.getEmployees()
             .then((err, result) => {
