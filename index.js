@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const Query = require('./sqlClass')
+const Query = require('./db/index')
 
 const addDepartment = () => {
     //prompt: name of the department
@@ -13,20 +13,11 @@ const addDepartment = () => {
         )
      //then add to database
     .then(({newDepartmentName}) => {
-       const createDepartment = new Query;
-       createDepartment.addDepartment(newDepartmentName)
-        .then((err, result) => {
-            if(err) {
-                res.status(400).json('There was an issue finding the departments in the database.');
-                return;
-            } else {
-                console.log('Department has been created successfully!');
-            }  
-        })
+        Query.addDepartment(newDepartmentName)
+        .then(() => console.log(`The department was added successfully to the database.`))
+        .then(() => init())
+        .catch(err => console.log('There was an error adding the department to the database.', err));
     })
-    .catch((err) => {
-        console.log('There was an error processing the request.');
-    });
 }
 const addRole = () => {
     inquirer
@@ -44,8 +35,7 @@ const addRole = () => {
     .then(res => {
         const roleName = res.newRole;
         const roleSalary = res.roleSalary;
-        const findDepartments = new Query();
-        findDepartments.getDepartments()
+        Query.getDepartments()
         .then(([rows]) => {
             let departments = rows;
             const departmentChoices = departments.map(({id, name}) => ({
@@ -53,7 +43,8 @@ const addRole = () => {
                 value: id
             }))
         inquirer
-        .prompt(        {
+        .prompt(        
+        {
             type: 'list',
             name: 'selectedDepartment',
             message: 'Which department is this role part of?',
@@ -62,19 +53,13 @@ const addRole = () => {
         .then(res => {
             let selectedDepartment = res.selectedDepartment;
             //then add role to database
-            const createRole = new Query();
-            createRole.addRole(roleName, roleSalary, selectedDepartment)
-                .then((err, result) => {
-                    if(err) {
-                        res.status(400).json('There was an issue creating the role in the database.');
-                        return;
-                    } else {
-                        console.log('The new role has been created sucessfully');
-                    }
-                })  
-            })
+            Query.addRole(roleName, roleSalary, selectedDepartment)
+                .then(() => console.log('The new role has been created sucessfully'))
+                .then(() => init())
+                .catch(err => console.log('There was an error processing the request.', err))
+            })           
         })
-    })
+    }) 
 }
 const addEmployee = () => {
     //prompt: enter the employee’s first name, last name, role, and manager, 
@@ -94,8 +79,7 @@ const addEmployee = () => {
     .then(res => {
         let firstName = res.firstName;
         let lastName = res.lastName;
-        const findRoles = new Query();
-        findRoles.getRoles()
+        Query.getRoles()
         .then(([rows]) => {
             let roles = rows;
             const roleChoices = roles.map(({id, title}) => ({
@@ -111,8 +95,7 @@ const addEmployee = () => {
             })
             .then(res => {
                 let roleId = res.roleId
-                const findManagers = new Query();
-                findManagers.getManager()
+                Query.getManager()
                 .then(([rows]) => {
                     let employees = rows;
                     const managerChoices = employees.map(({id, first_name, last_name}) => ({
@@ -129,22 +112,17 @@ const addEmployee = () => {
                     })
                     .then(res => {
                         let managerId = res.managerId
-                    //and add new employee to the database
-                    const createEmployee = new Query();
-                    createEmployee.addEmployee(firstName, lastName, roleId, managerId)
-                    .then((err, result) => {
-                        if(err) {
-                            res.status(400).json('There was an issue creating the employee in the database.');
-                            return;
-                        } else {
-                            console.log(result);
-                        }  
-                    })
-                })  
+                        //and add new employee to the database
+                        Query.addEmployee(firstName, lastName, roleId, managerId)
+                            .then(() => console.log('The new role has been created sucessfully'))
+                            .then(() => init())
+                            .catch(err => console.log('There was an error processing the request.', err));
+                    })    
+                })
             })
-        })
-    }) 
-})}
+        }) 
+    })
+}
 const updateEmployee = () => {
             //I am prompted to select an employee to update and their new role 
             //and this information is updated in the database 
@@ -170,31 +148,30 @@ const init = () => {
     .then(({userRequest}) => {
         if(userRequest === 'View all departments'){
             //view all departments: department names and department ids
-           const viewDepartments = new Query;
-           viewDepartments.getDepartments()
+            Query.getDepartments()
+            .then(([rows]) => {
+                let departments = rows;
+                console.log(departments)
+            })
+            .then(() => init())
+            .catch('There was an error', err);
         } else if (userRequest === 'View all roles'){
             //job title, role id, department the role belongs to, and salary for the role
-           const findRoles = new Query();
-           findRoles.getRoles()
-            .then(err, result => {
-                if(err) {
-                   console.log('There was an issue finding the roles in the database.');
-                    return;
-                } else {
-                    console.log(result);
-                }            
-            });
+            Query.getRoles()
+            .then(([rows]) => {
+                let roles = rows;
+                console.log(roles)
+            })
+            .then(() => init())
+            .catch('There was an error', err);
         } else if (userRequest === 'View all employees'){
-            const findEmployees = new Query();
-            findEmployees.getEmployees()
-            .then((err, result) => {
-                if(err) {
-                    res.status(400).json('There was an issue finding the employees in the database.');
-                    return;
-                } else {
-                    console.log(result);
-                }
-            });
+            Query.getEmployees()
+            .then(([rows]) => {
+                let employees = rows;
+                console.log(employees)
+            })
+            .then(() => init())
+            .catch('There was an error', err);
         } else if (userRequest === 'Add a department') addDepartment();
         else if (userRequest === 'Add a role') addRole();
         else if (userRequest === 'Add an employee') addEmployee();
