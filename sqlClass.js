@@ -2,8 +2,16 @@ const db = require('./db/sql')
 class Query {
     getDepartments() {
         const query = 
-        'SELECT department.id AS Department ID, department.name AS Department Name FROM department;';
-        db.promise().query(query);
+        'SELECT department.id AS Department_ID, department.name AS Department_Name FROM department;';
+        db.promise().query(query)
+        .then((err, result) => {
+            if(err) {
+                console.log('There was an issue finding the departments in the database.', err);
+                return;
+            } else {
+                console.log(result);
+            }  
+        });
     }
     getRoles() {
         const query = 
@@ -18,7 +26,7 @@ class Query {
     }
     getEmployees() {
         const query = 
-            'Select employee.id AS Employee ID, employee.first_name AS Employee First Name, employee.last_name AS Employee Last Name, role.title AS Employee Job Title, department.name AS Employee Department, role.salary AS Employee Salary, employee.manager_id AS Employee Manager FROM employee LEFT JOIN role ON role.id = employee.manager_id LEFT JOIN department ON department.id = role.department_id;';
+            'Select employee.id AS Employee ID, employee.first_name AS Employee First Name, employee.last_name AS Employee_Last_Name, role.title AS Employee_Job_Title, department.name AS Employee_Department, role.salary AS Employee_Salary, employee.manager_id AS Employee_Manager FROM employee LEFT JOIN role ON role.id = employee.manager_id LEFT JOIN department ON department.id = role.department_id;';
             db.promise().query(query)
     }
     addDepartment(newDepartmentName) {

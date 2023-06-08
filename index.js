@@ -145,8 +145,11 @@ const addEmployee = () => {
         })
     }) 
 })}
-
-
+const updateEmployee = () => {
+            //I am prompted to select an employee to update and their new role 
+            //and this information is updated in the database 
+            console.log('still working on it');
+}
 // a function to initialize the app
 const init = () => {
     inquirer
@@ -169,22 +172,13 @@ const init = () => {
             //view all departments: department names and department ids
            const viewDepartments = new Query;
            viewDepartments.getDepartments()
-            .then((err, result) => {
-                if(err) {
-                    res.status(400).json('There was an issue finding the departments in the database.');
-                    return;
-                } else {
-                    console.log(result);
-                }  
-            });
         } else if (userRequest === 'View all roles'){
             //job title, role id, department the role belongs to, and salary for the role
-            const query = 
-            'SELECT role.title AS Job Title, department.name AS Department Name, role.salary AS Role Salary FROM role JOIN department ON department.id = role.department_id;';
-            db.promise().query(query)
-            .then((err, result) => {
+           const findRoles = new Query();
+           findRoles.getRoles()
+            .then(err, result => {
                 if(err) {
-                    res.status(400).json('There was an issue finding the roles in the database.');
+                   console.log('There was an issue finding the roles in the database.');
                     return;
                 } else {
                     console.log(result);
@@ -201,20 +195,13 @@ const init = () => {
                     console.log(result);
                 }
             });
-        } else if (userRequest === 'Add a department'){
-            addDepartment();
-        } else if (userRequest === 'Add a role'){
-            addRole();
-        } else if (userRequest === 'Add an employee'){
-            addEmployee();
-        } else if (userRequest === 'Update an employee role'){
-            //I am prompted to select an employee to update and their new role 
-            //and this information is updated in the database 
-            console.log('still working on it');
-        }
+        } else if (userRequest === 'Add a department') addDepartment();
+        else if (userRequest === 'Add a role') addRole();
+        else if (userRequest === 'Add an employee') addEmployee();
+        else if (userRequest === 'Update an employee role') updateEmployee();
     })
     .catch((err) => {
-        console.log('There was an error processing the request.')
+        console.log('There was an error processing the request.', err)
     })
 }
 
