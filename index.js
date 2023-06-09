@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const Query = require('./db/index')
+const Query = require('./db')
 
 const addDepartment = () => {
     //prompt: name of the department
