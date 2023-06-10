@@ -1,5 +1,7 @@
 const inquirer = require('inquirer');
-const Query = require('./db')
+const Query = require('./db');
+const cTable = require('console.table');
+
 
 const addDepartment = () => {
     //prompt: name of the department
@@ -12,8 +14,8 @@ const addDepartment = () => {
             }
         )
      //then add to database
-    .then(({newDepartmentName}) => {
-        Query.addDepartment(newDepartmentName)
+    .then(({newDepartment}) => {
+        Query.addDepartment(newDepartment)
         .then(() => console.log(`The department was added successfully to the database.`))
         .then(() => init())
         .catch(err => console.log('There was an error adding the department to the database.', err));
@@ -39,17 +41,17 @@ const addRole = () => {
         .then(([rows]) => {
             let departments = rows;
             const departmentChoices = departments.map(({id, name}) => ({
-                name,
+                name: `${name}`,
                 value: id
-            }))
+            }));
         inquirer
-        .prompt(        
-        {
-            type: 'list',
-            name: 'selectedDepartment',
-            message: 'Which department is this role part of?',
-            choices: departmentChoices
-        })
+            .prompt(        
+            {
+                type: 'list',
+                name: 'selectedDepartment',
+                message: 'Which department is this role part of?',
+                choices: departmentChoices
+            })
         .then(res => {
             let selectedDepartment = res.selectedDepartment;
             //then add role to database
@@ -107,7 +109,7 @@ const addEmployee = () => {
                     .prompt({
                         type: 'list',
                         name: 'managerId',
-                        message: 'What is the role of the employee?',
+                        message: 'What is the manager of the employee?',
                         choices: managerChoices
                     })
                     .then(res => {
@@ -123,11 +125,51 @@ const addEmployee = () => {
         }) 
     })
 }
-const updateEmployee = () => {
-            //I am prompted to select an employee to update and their new role 
-            //and this information is updated in the database 
-            console.log('still working on it');
-}
+const updateEmployeeRole = () => {
+Query.getEmployees()
+.then(([rows]) => {
+    let employeeList = rows;
+    const employeeChoices = employeeList.map(({id, first_name, last_name}) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+    }))
+        inquirer
+        .prompt(        
+        {
+            type: 'list',
+            name: 'employeeUpdate',
+            message: "Which employee's role do you want to update?",
+            choices: employeeChoices
+        })
+        .then(({employeeUpdate}) => {
+            let employeeId = employeeUpdate;
+            Query.getRoles()
+            .then(([rows]) => {
+                let roles = rows;
+                const roleChoices = roles.map(({id, title}) => ({
+                    name: title,
+                    value: id
+                }))
+                inquirer
+                    .prompt(
+                        {
+                            type: 'list',
+                            name: 'newEmployeeRole',
+                            message: "Which new role do you want this employee to have?",
+                            choices: roleChoices
+                        }
+                    )
+                .then(({newEmployeeRole}) => {
+                    let roleId = newEmployeeRole
+                    Query.updateEmployeeRole(roleId, employeeId)
+                    .then(() => console.log('The employee has been updated sucessfully'))
+                    .then(() => init())
+                    .catch(err => console.log('There was an error processing the request.', err));
+                })
+            })  
+        })   
+    }
+)}
 // a function to initialize the app
 const init = () => {
     inquirer
@@ -142,45 +184,59 @@ const init = () => {
             'Add a department', 
             'Add a role', 
             'Add an employee', 
-            'Update an employee role'
+            'Update an employee role',
+            'Quit'
           ]  
         }])
     .then(({userRequest}) => {
-        if(userRequest === 'View all departments'){
+        switch(userRequest){
+            case 'View all departments':
             //view all departments: department names and department ids
             Query.getDepartments()
             .then(([rows]) => {
-                let departments = rows;
-                console.log(departments)
+                let departments = rows
+                console.table(departments)
             })
             .then(() => init())
-            .catch('There was an error', err);
-        } else if (userRequest === 'View all roles'){
+            .catch(err => console.log('There was an error'));
+            break;
+            case 'View all roles':             
             //job title, role id, department the role belongs to, and salary for the role
             Query.getRoles()
             .then(([rows]) => {
                 let roles = rows;
-                console.log(roles)
+                console.table(roles)
             })
             .then(() => init())
-            .catch('There was an error', err);
-        } else if (userRequest === 'View all employees'){
-            Query.getEmployees()
-            .then(([rows]) => {
-                let employees = rows;
-                console.log(employees)
-            })
-            .then(() => init())
-            .catch('There was an error', err);
-        } else if (userRequest === 'Add a department') addDepartment();
-        else if (userRequest === 'Add a role') addRole();
-        else if (userRequest === 'Add an employee') addEmployee();
-        else if (userRequest === 'Update an employee role') updateEmployee();
-    })
-    .catch((err) => {
-        console.log('There was an error processing the request.', err)
+            .catch(err => console.log('There was an error'));
+            break;
+            case 'View all employees':
+                Query.getEmployees()
+                .then(([rows]) => {
+                    let employees = rows;
+                    console.table(employees)
+                })
+                .then(() => init())
+                .catch(err => console.log('There was an error', err));
+            break;
+            case 'Add a department': 
+            addDepartment();
+            break;
+            case 'Add a role': 
+            addRole();
+            break;
+            case 'Add an employee': 
+            addEmployee();
+            break;
+            case 'Update an employee role':
+            updateEmployeeRole();
+            break;
+            case 'Quit':
+            return;
+            default:
+                console.log('There was an error processing the request.')
+        }
     })
 }
-
 // Function call to initialize app
 init(); 
