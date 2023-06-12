@@ -9,6 +9,7 @@ This app uses inquirer to ask you a few prompts to retrieve some database inform
 * [Installation](#installation)
 * [Usage](#usage)
 * [Contributing](#contribution)
+* [Links](#link-to-repo-and-video)
 
 ## Installation
 
@@ -30,3 +31,8 @@ node index.js
 
 Code created by anicrob with assistance from UNC tutor. 
 
+## Link to Repo and Video
+
+Repo: https://github.com/anicrob/employee-database-app
+
+Video
