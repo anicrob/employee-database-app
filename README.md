@@ -36,3 +36,5 @@ Code created by anicrob with assistance from UNC tutor.
 Repo: https://github.com/anicrob/employee-database-app
 
 Video
+https://github.com/anicrob/employee-database-app/assets/127058697/83039d17-3eee-4769-b877-7140049bd5d0
+
