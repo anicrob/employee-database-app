@@ -1,3 +1,4 @@
+//require mysql2 package
 const mysql = require('mysql2');
 
 // Connect to database
@@ -15,4 +16,5 @@ const db = mysql.createConnection(
         if(err) throw err;
     })
 
-    module.exports = db
+//export the db connection
+module.exports = db
